@@ -1,9 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<VotoDb>(opt => opt.UseInMemoryDatabase("Votos"));
+if (builder.Environment.EnvironmentName != "Development")
+{
+    var connection = new SqliteConnection("DataSource=votos.db");
+    connection.Open();
+    builder.Services.AddDbContext<VotoDb>(opt => opt.UseSqlite(connection));
+}
+else
+{
+    builder.Services.AddDbContext<VotoDb>(opt => opt.UseInMemoryDatabase("Votos"));
+}
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 var app = builder.Build();
@@ -19,7 +29,9 @@ app.Run();
 
 public class VotoDb : DbContext
 {
-    public VotoDb(DbContextOptions<VotoDb> options) : base(options) { }
+    public VotoDb(DbContextOptions<VotoDb> options) : base(options) { 
+        Database.EnsureCreated();
+    }
 
     public DbSet<Voto> Votos => Set<Voto>();
 }
