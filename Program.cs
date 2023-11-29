@@ -1,9 +1,12 @@
 using System.Globalization;
+using System.Net;
+using System.ServiceModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using ServiceReference;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,7 +34,11 @@ app.MapPost("/votos", async ([FromBody] Voto _nuevoVoto, VotoDb _db) => {
     response.EnsureSuccessStatusCode();
     var votante = JsonSerializer.Deserialize<Votante>(await response.Content.ReadAsStringAsync());
     DateTime FechaNacimiento = DateTime.ParseExact(votante.FechaNacimiento, "yyyy-MM-dd", CultureInfo.InvariantCulture);
-    if ((DateTime.Now.Year - FechaNacimiento.Year) > 16)
+
+    var soapServiceChannel = new CalculatorSoapClient(CalculatorSoapClient.EndpointConfiguration.CalculatorSoap);
+    var respuesta = await soapServiceChannel.SubtractAsync(DateTime.Now.Year, FechaNacimiento.Year);
+
+    if (respuesta > 16)
     {
         _db.Votos.Add(_nuevoVoto);
         _db.SaveChanges();

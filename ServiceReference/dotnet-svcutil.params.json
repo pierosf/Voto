@@ -1,0 +1,39 @@
+{
+  "providerId": "Microsoft.Tools.ServiceModel.Svcutil",
+  "version": "2.1.0",
+  "options": {
+    "inputs": [
+      "http://www.dneonline.com/calculator.asmx?WSDL"
+    ],
+    "namespaceMappings": [
+      "*, ServiceReference"
+    ],
+    "outputFile": "Reference.cs",
+    "references": [
+      "Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, {Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore, 7.0.10}",
+      "Microsoft.Data.Sqlite, {Microsoft.Data.Sqlite.Core, 7.0.10}",
+      "Microsoft.EntityFrameworkCore, {Microsoft.EntityFrameworkCore, 7.0.10}",
+      "Microsoft.EntityFrameworkCore.Abstractions, {Microsoft.EntityFrameworkCore.Abstractions, 7.0.10}",
+      "Microsoft.EntityFrameworkCore.InMemory, {Microsoft.EntityFrameworkCore.InMemory, 7.0.10}",
+      "Microsoft.EntityFrameworkCore.Relational, {Microsoft.EntityFrameworkCore.Relational, 7.0.10}",
+      "Microsoft.EntityFrameworkCore.Sqlite, {Microsoft.EntityFrameworkCore.Sqlite.Core, 7.0.10}",
+      "Microsoft.Extensions.Caching.Abstractions, {Microsoft.Extensions.Caching.Abstractions, 7.0.0}",
+      "Microsoft.Extensions.Caching.Memory, {Microsoft.Extensions.Caching.Memory, 7.0.0}",
+      "Microsoft.Extensions.Configuration.Abstractions, {Microsoft.Extensions.Configuration.Abstractions, 7.0.0}",
+      "Microsoft.Extensions.DependencyInjection, {Microsoft.Extensions.DependencyInjection, 7.0.0}",
+      "Microsoft.Extensions.DependencyInjection.Abstractions, {Microsoft.Extensions.DependencyInjection.Abstractions, 7.0.0}",
+      "Microsoft.Extensions.DependencyModel, {Microsoft.Extensions.DependencyModel, 7.0.0}",
+      "Microsoft.Extensions.Logging, {Microsoft.Extensions.Logging, 7.0.0}",
+      "Microsoft.Extensions.Logging.Abstractions, {Microsoft.Extensions.Logging.Abstractions, 7.0.0}",
+      "Microsoft.Extensions.Options, {Microsoft.Extensions.Options, 7.0.0}",
+      "Microsoft.Extensions.Primitives, {Microsoft.Extensions.Primitives, 7.0.0}",
+      "SQLitePCLRaw.batteries_v2, {SQLitePCLRaw.bundle_e_sqlite3, 2.1.4}",
+      "SQLitePCLRaw.core, {SQLitePCLRaw.core, 2.1.4}",
+      "SQLitePCLRaw.provider.e_sqlite3, {SQLitePCLRaw.provider.e_sqlite3, 2.1.4}",
+      "System.Text.Encodings.Web, {System.Text.Encodings.Web, 7.0.0}",
+      "System.Text.Json, {System.Text.Json, 7.0.0}"
+    ],
+    "targetFramework": "net7.0",
+    "typeReuseMode": "All"
+  }
+}
