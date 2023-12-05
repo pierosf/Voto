@@ -1,6 +1,4 @@
 using System.Globalization;
-using System.Net;
-using System.ServiceModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
@@ -29,7 +27,6 @@ HttpClient client = new HttpClient();
 app.MapGet("/votos", (VotoDb _db) => TypedResults.Ok(_db.Votos.ToList()));
 app.MapPost("/votos", async ([FromBody] Voto _nuevoVoto, VotoDb _db) => {
     var request = new HttpRequestMessage(HttpMethod.Get, new Uri($"http://localhost:5000/votantes/{_nuevoVoto.VotanteId}"));
-    request.Headers.Accept.Clear();
     var response = await client.SendAsync(request, CancellationToken.None);
     response.EnsureSuccessStatusCode();
     var votante = JsonSerializer.Deserialize<Votante>(await response.Content.ReadAsStringAsync());
@@ -50,7 +47,25 @@ app.MapPost("/votos", async ([FromBody] Voto _nuevoVoto, VotoDb _db) => {
     }
 });
 
+app.Use(async (context, next) => {
+    //code before
+    var _db = context.RequestServices.GetRequiredService<VotoDb>();
+    _db.Logs.Add(new Log() {
+        Message = $"{context.Request.Path} - {context.Request.Method}",
+        Date = new DateTime(),
+        Type = TypeEnum.REQUEST
+    });
+    await next.Invoke();
+    _db.Logs.Add(new Log() {
+        Message = $"{context.Request.Path} - {context.Request.Method} - {context.Response.StatusCode}",
+        Date = new DateTime(),
+        Type = TypeEnum.RESPONSE
+    });
+    _db.SaveChanges();
+});
+
 app.Run();
+
 
 
 public class VotoDb : DbContext
@@ -60,6 +75,7 @@ public class VotoDb : DbContext
     }
 
     public DbSet<Voto> Votos => Set<Voto>();
+    public DbSet<Log> Logs => Set<Log>();
 }
 
 public class Voto
@@ -76,3 +92,19 @@ public class Votante
     [JsonPropertyName("fechaNacimiento")]
     public required string FechaNacimiento { get; set; }
 }
+
+
+public class Log
+{
+    public int Id { get; set; }
+    public DateTime Date { get; set; }
+    public TypeEnum Type { get; set; }
+    public required string Message { get; set; }
+}
+
+public enum TypeEnum
+{ 
+    REQUEST,
+    RESPONSE
+}
+
