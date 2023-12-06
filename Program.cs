@@ -18,7 +18,7 @@ else
 {
     builder.Services.AddDbContext<VotoDb>(opt => opt.UseInMemoryDatabase("Votos"));
 }
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
 
 var app = builder.Build();
 
@@ -43,12 +43,11 @@ app.MapPost("/votos", async ([FromBody] Voto _nuevoVoto, VotoDb _db) => {
     }
     else 
     {
-        throw new Exception("Es menor y no puede votar");
+        throw new CustomException("El votante no tiene la edad para votar", 500);
     }
 });
 
 app.Use(async (context, next) => {
-    //code before
     var _db = context.RequestServices.GetRequiredService<VotoDb>();
     _db.Logs.Add(new Log() {
         Message = $"{context.Request.Path} - {context.Request.Method}",
@@ -63,6 +62,19 @@ app.Use(async (context, next) => {
     });
     _db.SaveChanges();
 });
+
+app.Use(async (context, next) => {
+    try 
+    {
+        await next.Invoke();
+    }
+    catch(CustomException ex)
+    {
+        context.Response.StatusCode = 500;
+        await context.Response.WriteAsJsonAsync(new ErrorEntity() {Message = ex.Message, StatusCode = ex.StatusCode});
+    }
+});
+
 
 app.Run();
 
@@ -108,3 +120,17 @@ public enum TypeEnum
     RESPONSE
 }
 
+public class CustomException : Exception 
+{
+    public CustomException(string message, int statusCode) : base(message)
+    {
+        StatusCode = statusCode;
+    }
+    public int StatusCode {get; set;}
+}
+
+public class ErrorEntity
+{
+    public int StatusCode { get; set; }
+    public required string Message { get; set; }
+}
