@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -25,18 +26,32 @@ var app = builder.Build();
 HttpClient client = new HttpClient();
 
 app.MapGet("/votos", async (VotoDb _db) => {
+    Stopwatch reloj = new();
+    reloj.Start();
     var resultadosVotaciones = new List<Resultado>();
     var votos = _db.Votos.ToList();
     resultadosVotaciones = votos.GroupBy(v => v.CandidatoId).Select(v => new Resultado(){CandidatoId = v.Key, Votos = v.Count(), Candidato = string.Empty}).ToList();
-    
+    List<Task<HttpResponseMessage>> consultas = new();
     foreach (var resultado in resultadosVotaciones)
     {
         if (resultado.CandidatoId.HasValue) 
         {
             var request = new HttpRequestMessage(HttpMethod.Get, new Uri($"http://localhost:5117/candidatos/{resultado.CandidatoId.Value}"));
-            var response = await client.SendAsync(request, CancellationToken.None);
-            response.EnsureSuccessStatusCode();
-            var candidato = JsonSerializer.Deserialize<Candidato>(await response.Content.ReadAsStringAsync());    
+            consultas.Add(client.SendAsync(request, CancellationToken.None));
+        }
+    }
+    await Task.WhenAll(consultas);
+    List<Candidato> candidatosDesdeApi = new();
+    foreach (var consulta in consultas)
+    {
+        consulta.Result.EnsureSuccessStatusCode();
+        candidatosDesdeApi.Add(JsonSerializer.Deserialize<Candidato>(await consulta.Result.Content.ReadAsStringAsync()));
+    }
+    foreach (var resultado in resultadosVotaciones)
+    {
+        if (resultado.CandidatoId.HasValue)
+        {
+            var candidato = candidatosDesdeApi.FirstOrDefault( c => c.Id == resultado.CandidatoId.Value);
             resultado.Candidato = $"{candidato.Nombre} {candidato.Apellido}";
         }
         else
@@ -44,7 +59,9 @@ app.MapGet("/votos", async (VotoDb _db) => {
             resultado.Candidato = "Nulos";
         }
     }
-    TypedResults.Ok(resultadosVotaciones);
+    reloj.Stop();
+    Console.WriteLine(reloj.Elapsed.TotalSeconds);
+    return TypedResults.Ok(resultadosVotaciones);
 });
 app.MapPost("/votos", async ([FromBody] Voto _nuevoVoto, VotoDb _db) => {
     var request = new HttpRequestMessage(HttpMethod.Get, new Uri($"http://localhost:5000/votantes/{_nuevoVoto.VotanteId}"));
