@@ -24,7 +24,28 @@ var app = builder.Build();
 
 HttpClient client = new HttpClient();
 
-app.MapGet("/votos", (VotoDb _db) => TypedResults.Ok(_db.Votos.ToList()));
+app.MapGet("/votos", async (VotoDb _db) => {
+    var resultadosVotaciones = new List<Resultado>();
+    var votos = _db.Votos.ToList();
+    resultadosVotaciones = votos.GroupBy(v => v.CandidatoId).Select(v => new Resultado(){CandidatoId = v.Key, Votos = v.Count(), Candidato = string.Empty}).ToList();
+    
+    foreach (var resultado in resultadosVotaciones)
+    {
+        if (resultado.CandidatoId.HasValue) 
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, new Uri($"http://localhost:5117/candidatos/{resultado.CandidatoId.Value}"));
+            var response = await client.SendAsync(request, CancellationToken.None);
+            response.EnsureSuccessStatusCode();
+            var candidato = JsonSerializer.Deserialize<Candidato>(await response.Content.ReadAsStringAsync());    
+            resultado.Candidato = $"{candidato.Nombre} {candidato.Apellido}";
+        }
+        else
+        {
+            resultado.Candidato = "Nulos";
+        }
+    }
+    TypedResults.Ok(resultadosVotaciones);
+});
 app.MapPost("/votos", async ([FromBody] Voto _nuevoVoto, VotoDb _db) => {
     var request = new HttpRequestMessage(HttpMethod.Get, new Uri($"http://localhost:5000/votantes/{_nuevoVoto.VotanteId}"));
     var response = await client.SendAsync(request, CancellationToken.None);
@@ -105,6 +126,22 @@ public class Votante
     public required string FechaNacimiento { get; set; }
 }
 
+public class Candidato
+{
+    [JsonPropertyName("id")]
+    public int Id { get; set; }
+    [JsonPropertyName("nombre")]
+    public required string Nombre { get; set; }
+    [JsonPropertyName("apellido")]
+    public required string Apellido { get; set; }
+}
+
+public class Resultado
+{
+    public int? CandidatoId { get; set; }
+    public required string Candidato { get; set; }
+    public int Votos { get; set; }
+}
 
 public class Log
 {
