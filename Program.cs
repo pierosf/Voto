@@ -9,16 +9,11 @@ using ServiceReference;
 
 var builder = WebApplication.CreateBuilder(args);
 
-if (builder.Environment.EnvironmentName != "Development")
-{
-    var connection = new SqliteConnection("DataSource=votos.db");
-    connection.Open();
-    builder.Services.AddDbContext<VotoDb>(opt => opt.UseSqlite(connection));
-}
-else
-{
-    builder.Services.AddDbContext<VotoDb>(opt => opt.UseInMemoryDatabase("Votos"));
-}
+
+var connection = new SqliteConnection("DataSource=votos.db");
+connection.Open();
+builder.Services.AddDbContext<VotoDb>(opt => opt.UseSqlite(connection));
+
 
 
 var app = builder.Build();
@@ -59,8 +54,6 @@ app.MapGet("/votos", async (VotoDb _db) => {
             resultado.Candidato = "Nulos";
         }
     }
-    reloj.Stop();
-    Console.WriteLine(reloj.Elapsed.TotalSeconds);
     return TypedResults.Ok(resultadosVotaciones);
 });
 app.MapPost("/votos", async ([FromBody] Voto _nuevoVoto, VotoDb _db) => {
@@ -86,19 +79,21 @@ app.MapPost("/votos", async ([FromBody] Voto _nuevoVoto, VotoDb _db) => {
 });
 
 app.Use(async (context, next) => {
-    var _db = context.RequestServices.GetRequiredService<VotoDb>();
-    _db.Logs.Add(new Log() {
-        Message = $"{context.Request.Path} - {context.Request.Method}",
-        Date = new DateTime(),
-        Type = TypeEnum.REQUEST
-    });
-    await next.Invoke();
-    _db.Logs.Add(new Log() {
-        Message = $"{context.Request.Path} - {context.Request.Method} - {context.Response.StatusCode}",
-        Date = new DateTime(),
-        Type = TypeEnum.RESPONSE
-    });
-    _db.SaveChanges();
+    using (var _db = context.RequestServices.GetRequiredService<VotoDb>())
+    {
+       _db.Logs.Add(new Log() {
+            Message = $"{context.Request.Path} - {context.Request.Method}",
+            Date = DateTime.Now,
+            Type = TypeEnum.REQUEST
+        });
+        await next.Invoke();
+        _db.Logs.Add(new Log() {
+            Message = $"{context.Request.Path} - {context.Request.Method} - {context.Response.StatusCode}",
+            Date = DateTime.Now,
+            Type = context.Response.StatusCode == 500 ? TypeEnum.ERROR : TypeEnum.RESPONSE
+        });
+        _db.SaveChanges(); 
+    }
 });
 
 app.Use(async (context, next) => {
@@ -171,7 +166,8 @@ public class Log
 public enum TypeEnum
 { 
     REQUEST,
-    RESPONSE
+    RESPONSE,
+    ERROR
 }
 
 public class CustomException : Exception 
