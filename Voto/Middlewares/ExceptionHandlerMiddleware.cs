@@ -1,19 +1,15 @@
 using voto.Entities;
 using voto.Exceptions;
-using voto.Helpers;
-using voto.Repository.Interfaces;
 
 namespace voto.Middlewares;
 
 public class ExceptionHandlerMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogRepository _logRepo;
 
-    public ExceptionHandlerMiddleware(RequestDelegate next, ILogRepository logRepo)
+    public ExceptionHandlerMiddleware(RequestDelegate next)
     {
         _next = next;
-        _logRepo = logRepo;
     }
 
     public async Task Invoke(HttpContext context)

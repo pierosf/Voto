@@ -1,25 +1,28 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.5.002.0
+VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Voto", "Voto.csproj", "{060FAAF0-7E23-483F-8D66-07CE52D656D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Voto", "Voto\Voto.csproj", "{9D845AD2-CBF7-4CAA-BA62-C278CFA3B297}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Voto.Test", "Voto.Test\Voto.Test.csproj", "{8AA7D79B-A574-4017-AA7F-F227D1CAA705}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{060FAAF0-7E23-483F-8D66-07CE52D656D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{060FAAF0-7E23-483F-8D66-07CE52D656D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{060FAAF0-7E23-483F-8D66-07CE52D656D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{060FAAF0-7E23-483F-8D66-07CE52D656D9}.Release|Any CPU.Build.0 = Release|Any CPU
-	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {287272B8-625D-4AFB-B38E-66E57990F1C6}
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9D845AD2-CBF7-4CAA-BA62-C278CFA3B297}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D845AD2-CBF7-4CAA-BA62-C278CFA3B297}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D845AD2-CBF7-4CAA-BA62-C278CFA3B297}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D845AD2-CBF7-4CAA-BA62-C278CFA3B297}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8AA7D79B-A574-4017-AA7F-F227D1CAA705}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8AA7D79B-A574-4017-AA7F-F227D1CAA705}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8AA7D79B-A574-4017-AA7F-F227D1CAA705}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8AA7D79B-A574-4017-AA7F-F227D1CAA705}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

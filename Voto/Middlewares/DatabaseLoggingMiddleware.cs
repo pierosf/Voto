@@ -6,15 +6,13 @@ namespace voto.Middlewares;
 public class DatabaseLoggingMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogRepository _logRepo;
 
-    public DatabaseLoggingMiddleware(RequestDelegate next, ILogRepository logRepo)
+    public DatabaseLoggingMiddleware(RequestDelegate next)
     {
         _next = next;
-        _logRepo = logRepo;
     }
 
-    public async Task Invoke(HttpContext context)
+    public async Task Invoke(HttpContext context, ILogRepository _logRepo)
     {
         await _logRepo.CreateLog(new() {
             Message = $"{context.Request.Path} - {context.Request.Method}",

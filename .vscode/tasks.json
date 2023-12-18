@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/Voto.csproj",
+                "${workspaceFolder}/Voto/Voto.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/Voto.csproj",
+                "${workspaceFolder}/Voto/Voto.csproj",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/Voto.csproj"
+                "${workspaceFolder}/Voto/Voto.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

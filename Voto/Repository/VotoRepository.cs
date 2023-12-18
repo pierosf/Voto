@@ -1,4 +1,3 @@
-using System.Data.Common;
 using Microsoft.EntityFrameworkCore;
 using voto.Context;
 using voto.Repository.Interfaces;
