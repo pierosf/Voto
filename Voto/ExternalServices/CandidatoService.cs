@@ -21,7 +21,7 @@ public class CandidatoService : ICandidatoService
             var response = await _client.SendAsync(request, CancellationToken.None);
             response.EnsureSuccessStatusCode();
             var candidato = JsonSerializer.Deserialize<Candidato>(await response.Content.ReadAsStringAsync());
-            return candidato;
+            return candidato ?? throw new CustomException($"No se puede encontrar el candidato",404);;
         }
         catch (Exception ex)
         {

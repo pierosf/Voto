@@ -21,11 +21,11 @@ public class VotanteService : IVotanteService
             var response = await _client.SendAsync(request, CancellationToken.None);
             response.EnsureSuccessStatusCode();
             var votante = JsonSerializer.Deserialize<Votante>(await response.Content.ReadAsStringAsync());
-            return votante;
+            return votante ?? throw new CustomException($"No se puede encontrar el votante", 404);
         }
         catch(Exception ex)
         {
-            throw new CustomException($"No se puede encontrar el votante - {ex.Message}",404);
+            throw new CustomException($"No se puede encontrar el votante - {ex.Message}", 404);
         }
 
     }
