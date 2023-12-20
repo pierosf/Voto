@@ -1,5 +1,7 @@
+using System.Reflection;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using voto.Context;
 using voto.ExternalServices;
 using voto.ExternalServices.Interfaces;
@@ -23,6 +25,18 @@ public class Program
 
         builder.Services.AddControllers();
 
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo
+            {   
+                Version = "v1",
+                Title = "Voto API",
+                Description = "Una API para registrar votos y obtener resultados para votaciones",
+            });
+            var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+        });
+
         builder.Services.AddScoped<IVotoService, VotoService>();
         builder.Services.AddScoped<IVotanteService, VotanteService>();
         builder.Services.AddScoped<ICandidatoService, CandidatoService>();
@@ -37,6 +51,8 @@ public class Program
         app.UseDatabaseLoggingMiddleware();
         app.UseExceptionHandlerMiddleware();
         app.MapControllers();
+        app.UseSwagger();
+        app.UseSwaggerUI();
 
         app.Run();
     }
